@@ -641,6 +641,9 @@ OsuOptionsMenu::OsuOptionsMenu(Osu *osu) : OsuScreenBackable(osu)
 	CBaseUIElement *sectionGameplay = addSection("Gameplay");
 
 	addSubSection("FPoSu");
+	CBaseUISlider *fovSlider = addSlider("Horizontal FOV:", 20.0f, 160.0f, convar->getConVarByName("fposu_fov"));
+	fovSlider->setChangeCallback( fastdelegate::MakeDelegate(this, &OsuOptionsMenu::onSliderChangeInt) );
+	fovSlider->setKeyDelta(60);
 	addCheckbox("Curved play area", convar->getConVarByName("fposu_curved"));
 	addCheckbox("Background cube", convar->getConVarByName("fposu_cube"));
 
