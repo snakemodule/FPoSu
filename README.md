@@ -1,3 +1,7 @@
+# FPoSu has been merged with McOsu and is available for free on steam
+
+This version is no longer being updated
+
 # FPoSu
 
 This is a modification of McOsu that allows you to play in first person.
