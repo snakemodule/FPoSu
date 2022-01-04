@@ -544,6 +544,12 @@ void Osu::draw(Graphics *g)
 
 		m_windowManager->draw(g);
 
+		//draw normal cursor
+		//if (allowDrawCursor && beatmapStd != NULL)
+		//{
+		//	Vector2 cursorPos = (beatmapStd != NULL ) ? beatmapStd->getCursorPos() : engine->getMouse()->getPos();
+		//	m_hud->drawCursor(g, cursorPos, osu_mod_fadingcursor.getBool() ? fadingCursorAlpha : 1.0f);
+		//}
 
 		//======================= draw playfield
 		playfieldBuffer->disable();
@@ -592,7 +598,7 @@ void Osu::draw(Graphics *g)
 		if (osu_draw_fps.getBool())
 			m_hud->drawFps(g);
 
-		//draw cursor
+		//draw cursor crosshair
 		if (allowDrawCursor && beatmapStd != NULL)
 			m_hud->drawCursor(g, Vector2((float)getScreenWidth(), (float)getScreenHeight())/2, osu_mod_fadingcursor.getBool() ? fadingCursorAlpha : 1.0f);
 
@@ -741,19 +747,19 @@ void Osu::update()
 			Vector3 intersectionPoint = camera->getPos() + camera->getViewDirection()*t;
 
 			if(abs(calculatedNormal.dot(intersectionPoint-TopLeft)) < 1e-6f) {
-				float  u = (intersectionPoint-TopLeft).dot(Right-TopLeft);
-				float v = (intersectionPoint-TopLeft).dot(Down-TopLeft);
-				if(u >= 0 && u <= (Right-TopLeft).dot(Right-TopLeft)) {
-					if(v >= 0 && v <= (Down-TopLeft).dot(Down-TopLeft)) {
-						float rightLength = (Right-TopLeft).length();
-						float downLength = (Down-TopLeft).length();
-						float x=u/(rightLength*rightLength);
-						float y=v/(downLength*downLength);
+				Vector3 faceTopEdge = (Right-TopLeft);
+				Vector3 faceSideEdge = (Down-TopLeft);
+				float u = (intersectionPoint-TopLeft).dot(faceTopEdge) / (faceTopEdge).dot(faceTopEdge);
+				float v = (intersectionPoint-TopLeft).dot(faceSideEdge) / (faceSideEdge).dot(faceSideEdge);
+
+				if(u >= 0 && u <= 1) {
+					if(v >= 0 && v <= 1) {
 						float distancePerFace = engine->getScreenWidth()/pow(2,subdivisions);
-						float distanceInFace = distancePerFace*x;
+						float distanceInFace = distancePerFace*u;
 						Vector2 newMousePos = Vector2((distancePerFace*face)+distanceInFace,
-													  y*engine->getScreenHeight());
+													  v*engine->getScreenHeight());
 						engine->getMouse()->setPos(newMousePos);
+						break;
 					}
 				}
 			}
